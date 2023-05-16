@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 type Weather struct {
 	Location struct {
 		Name    string `json:"name"`
+		Region  string `json:"region"`
 		Country string `json:"country"`
 	} `json:"location"`
 
@@ -43,12 +45,15 @@ type Weather struct {
 }
 
 func main() {
+	var loc_name = flag.String("l", "Houston", "Check this location's weather.\nFor locations that are more than 1 word, split using _ (ex: new_york)")
+	flag.Parse()
+
 	weather_api_key, ok := os.LookupEnv("WEATHER_API_TOKEN")
 	if !ok || weather_api_key == "" {
 		panic("Weather API key not set")
 	}
 
-	res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?key=" + weather_api_key + "&q=singapore")
+	res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?key=" + weather_api_key + "&q=" + *loc_name)
 	if err != nil {
 		panic(err)
 	}
@@ -71,10 +76,14 @@ func main() {
 
 	location, current, hours := weather.Location, weather.Current, weather.Forecast.Forecastday[0].Hour
 
-	fmt.Printf("%s\n", strings.Repeat("─", 75))
-	fmt.Printf("%s, %s: %.0fF, %0.fC\n", location.Name, location.Country, current.TempF, current.TempC)
+	color.Yellow("%s\n", strings.Repeat("─", 75))
+	if location.Region != "" {
+		color.Magenta("%s, %s, %s: %.0fF, %0.fC\n", location.Name, location.Region, location.Country, current.TempF, current.TempC)
+	} else {
+		color.Magenta("%s, %s: %.0fF, %0.fC\n", location.Name, location.Country, current.TempF, current.TempC)
+	}
 	fmt.Printf("Today's condition: %s\n", current.Condition.Text)
-	fmt.Printf("%s\n", strings.Repeat("─", 75))
+	color.Yellow("%s\n", strings.Repeat("─", 75))
 
 	for _, hour := range hours {
 		date := time.Unix(hour.TimeEpoch, 0)
