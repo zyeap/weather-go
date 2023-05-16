@@ -16,14 +16,15 @@ Any of the following commands can be used to build weather-go
 ```
 1. make
 2. go build
-3. go run main.go (only runs main.go, does not build binary)
 ```
 You should see a weather-go binary file within the current directory
 ```
 > ls
 assets  go.mod  go.sum  main.go  Makefile  weather-go
 ```
-### Running weather-go
+## Running weather-go
+
+Running the binary (default location is Houston)
 ```
 > ./weather-go
 ───────────────────────────────────────────────────────────────────────────
@@ -35,8 +36,11 @@ Today's condition: Partly cloudy
 [19:00 - 77F, 25C] - [0% rain] - [Clear]
 [20:00 - 77F, 25C] - [0% rain] - [Partly cloudy]
 [21:00 - 76F, 24C] - [76% rain] - [Patchy rain possible]
+```
 
-> ./weather-go -l san_jose
+Running via `go run main.go`
+```
+> go run main.go -l san_jose
 ───────────────────────────────────────────────────────────────────────────
 San Jose, California, United States of America: 80F, 27C
 Today's condition: Partly cloudy
